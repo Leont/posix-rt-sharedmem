@@ -1,0 +1,148 @@
+package POSIX::RT::SharedMem;
+
+use strict;
+use warnings;
+
+use Exporter 5.57 'import';
+use XSLoader;
+use Carp qw/croak/;
+use Fcntl qw/O_RDONLY O_WRONLY O_RDWR O_CREAT/;
+
+use File::Map 'map_handle';
+
+our $VERSION = '0.01';
+
+our @EXPORT_OK = qw/shared_open shared_unlink/;
+
+XSLoader::load('POSIX::RT::SharedMem', $VERSION);
+
+my %flag_for = (
+	'<'  => O_RDONLY,
+	'+<' => O_RDWR,
+	'>'  => O_WRONLY,
+	'+>' => O_RDWR | O_CREAT,
+);
+
+sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
+	my (undef, $name, $mode, %other) = @_;
+
+	my %options = (
+		perms => oct('700'),
+		%other,
+	);
+	croak 'Not enough arguments for shared_open' if @_ < 2;
+	$mode = '<' if not defined $mode;
+	my $flag = $flag_for{$mode};
+	croak 'No such mode' if not defined $flag;
+
+	my $fd = _shm_open($name, $flag, $options{perms});
+	open my $fh, '<&', $fd or croak "Can't fdopen fd($fd)";
+	croak 'can\'t map empty file' if (not defined $options{size} and (-s $fh) == 0);
+	$options{size} = -s $fh if not defined $options{size};
+	truncate $fh, $options{size} if $options{size} < -s $fh;
+	map_handle $_[0], $fh, $mode;
+	close $fh or croak "Could not close shared filehandle: $!";
+	return;
+}
+
+1;    # End of POSIX::RT::SharedMem
+
+__END__
+
+=head1 NAME
+
+POSIX::RT::SharedMem - Create/open or unlink POSIX shared memory objects in Perl
+
+=head1 VERSION
+
+Version 0.01
+
+=head1 SYNOPSIS
+
+Perhaps a little code snippet.
+
+    use POSIX::RT::SharedMem;
+
+	shared_open my $map, '/some_file', '>+', size => 1024, perms => oct(777);
+
+=head1 FUNCTIONS
+
+=head2 shared_open $map, $name, $mode, ...
+
+Map the shared memory object $name into $map. For portable use, a shared memory object should be identified by a name of the form /somename; that is, a string consisting of an initial slash, followed by one or more characters, none of which are slashes.
+
+$mode determines the read/write mode. It works the same as in open and map_file.
+
+Beyond that it can take two named arguments:
+
+=over 4
+
+=item * size
+
+This determines the size of the map. If the map is map has writing permissions and the file is smaller that $size it will be lengthened.
+
+=item * perms
+
+This determines the permissions with which the file is created (if $mode is '+>').
+
+=back
+
+=head2 shared_unlink $name
+
+Remove the shared memory object $name from the namespace. Note that while the shared memory object can't be opened anymore after this, it doesn't remove the contents until all processes have closed it.
+
+=head1 AUTHOR
+
+Leon Timmermans, C<< <leont at cpan.org> >>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-posix-rt-sharedmem at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=POSIX-RT-SharedMem>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
+
+=head1 SUPPORT
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc POSIX::RT::SharedMem
+
+
+You can also look for information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=POSIX-RT-SharedMem>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/POSIX-RT-SharedMem>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/POSIX-RT-SharedMem>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/POSIX-RT-SharedMem>
+
+=back
+
+=head1 SEE ALSO
+
+=over 4
+
+=item * L<File::Map>
+
+=back
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2010 Leon Timmermans, all rights reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut

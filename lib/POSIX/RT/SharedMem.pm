@@ -32,15 +32,14 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	);
 	croak 'Not enough arguments for shared_open' if @_ < 2;
 	$mode = '<' if not defined $mode;
-	my $flag = $flag_for{$mode};
-	croak 'No such mode' if not defined $flag;
+	croak 'No such mode' if not defined $flag_for{$mode};
 
-	my $fd = _shm_open($name, $flag, $options{perms});
+	my $fd = _shm_open($name, $flag_for{$mode}, $options{perms});
 	open my $fh, '<&', $fd or croak "Can't fdopen fd($fd)";
-	croak 'can\'t map empty file' if (not defined $options{size} and (-s $fh) == 0);
 	$options{size} = -s $fh if not defined $options{size};
-	truncate $fh, $options{size} if $options{size} < -s $fh;
-	map_handle $_[0], $fh, $mode;
+	croak 'can\'t map empty file' if $options{size} == 0;
+	truncate $fh, $options{size} if $options{size} > -s $fh;
+	map_handle $_[0], $fh, $mode, 0, $options{size};
 	close $fh or croak "Could not close shared filehandle: $!";
 	return;
 }
@@ -59,8 +58,6 @@ Version 0.01
 
 =head1 SYNOPSIS
 
-Perhaps a little code snippet.
-
     use POSIX::RT::SharedMem;
 
 	shared_open my $map, '/some_file', '>+', size => 1024, perms => oct(777);
@@ -69,9 +66,9 @@ Perhaps a little code snippet.
 
 =head2 shared_open $map, $name, $mode, ...
 
-Map the shared memory object $name into $map. For portable use, a shared memory object should be identified by a name of the form /somename; that is, a string consisting of an initial slash, followed by one or more characters, none of which are slashes.
+Map the shared memory object C<$name> into C<$map>. For portable use, a shared memory object should be identified by a name of the form '/somename'; that is, a string consisting of an initial slash, followed by one or more characters, none of which are slashes.
 
-$mode determines the read/write mode. It works the same as in open and map_file.
+C<$mode> determines the read/write mode. It works the same as in open and map_file.
 
 Beyond that it can take two named arguments:
 
@@ -79,11 +76,11 @@ Beyond that it can take two named arguments:
 
 =item * size
 
-This determines the size of the map. If the map is map has writing permissions and the file is smaller that $size it will be lengthened.
+This determines the size of the map. If the map is map has writing permissions and the file is smaller than the given size it will be lengthened.
 
 =item * perms
 
-This determines the permissions with which the file is created (if $mode is '+>').
+This determines the permissions with which the file is created (if $mode is '+>'). Default is 0700.
 
 =back
 
@@ -106,7 +103,6 @@ automatically be notified of progress on your bug as I make changes.
 You can find documentation for this module with the perldoc command.
 
     perldoc POSIX::RT::SharedMem
-
 
 You can also look for information at:
 

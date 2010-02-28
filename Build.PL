@@ -20,6 +20,7 @@ my $builder = Module::Build->new(
 		perl            => 5.008,
 		Readonly        => 1.03,
 		Exporter        => 5.57,
+		'File::Map'     => 0.19,
 	},
 	meta_merge => {
 		resources       => {

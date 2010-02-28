@@ -10,7 +10,7 @@ use Fcntl qw/O_RDONLY O_WRONLY O_RDWR O_CREAT/;
 
 use File::Map 'map_handle';
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our @EXPORT_OK = qw/shared_open shared_unlink/;
 
@@ -54,7 +54,7 @@ POSIX::RT::SharedMem - Create/open or unlink POSIX shared memory objects in Perl
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 

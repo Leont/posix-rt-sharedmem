@@ -1,5 +1,8 @@
 Revision history for POSIX-RT-SharedMem
 
+0.02    2010-02-28
+        Fixed missing dependency
+
 0.01    2010-02-28
         First version, released on an unsuspecting world.
 

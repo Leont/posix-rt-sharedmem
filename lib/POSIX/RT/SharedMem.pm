@@ -11,7 +11,7 @@ use Readonly 1.03;
 
 use File::Map 'map_handle';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 our @EXPORT_OK = qw/shared_open shared_unlink/;
 
@@ -63,7 +63,7 @@ POSIX::RT::SharedMem - Create/open or unlink POSIX shared memory objects in Perl
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =head1 SYNOPSIS
 

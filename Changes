@@ -1,5 +1,10 @@
 Revision history for POSIX-RT-SharedMem
 
+0.03    2010-03-08
+        Fixed linking options on BSD
+        Handle error conditions in Perl land
+        Added offset option
+
 0.02    2010-02-28
         Fixed missing dependency
 

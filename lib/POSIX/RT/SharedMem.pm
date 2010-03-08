@@ -7,6 +7,7 @@ use Exporter 5.57 'import';
 use XSLoader;
 use Carp qw/croak/;
 use Fcntl qw/O_RDONLY O_WRONLY O_RDWR O_CREAT/;
+use Readonly 1.03;
 
 use File::Map 'map_handle';
 
@@ -15,6 +16,9 @@ our $VERSION = '0.02';
 our @EXPORT_OK = qw/shared_open shared_unlink/;
 
 XSLoader::load('POSIX::RT::SharedMem', $VERSION);
+
+Readonly my $fail_fd      => -1;
+Readonly my $default_mode => oct 700;
 
 my %flag_for = (
 	'<'  => O_RDONLY,
@@ -27,7 +31,8 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	my (undef, $name, $mode, %other) = @_;
 
 	my %options = (
-		perms => oct('700'),
+		perms  => $default_mode,
+		offset => 0,
 		%other,
 	);
 	croak 'Not enough arguments for shared_open' if @_ < 2;
@@ -35,12 +40,16 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	croak 'No such mode' if not defined $flag_for{$mode};
 
 	my $fd = _shm_open($name, $flag_for{$mode}, $options{perms});
-	open my $fh, '<&', $fd or croak "Can't fdopen fd($fd)";
+	croak "Can't open shared memory object $name: $!" if $fd == $fail_fd;
+	open my $fh, '<&', $fd or croak "Can't fdopen($fd): $!";
+
 	$options{size} = -s $fh if not defined $options{size};
 	croak 'can\'t map empty file' if $options{size} == 0;
 	truncate $fh, $options{size} if $options{size} > -s $fh;
-	map_handle $_[0], $fh, $mode, 0, $options{size};
+
+	map_handle $_[0], $fh, $mode, $options{offset}, $options{size};
 	close $fh or croak "Could not close shared filehandle: $!";
+
 	return;
 }
 
@@ -58,7 +67,7 @@ Version 0.02
 
 =head1 SYNOPSIS
 
-    use POSIX::RT::SharedMem;
+	use POSIX::RT::SharedMem qw/shared_open/;
 
 	shared_open my $map, '/some_file', '>+', size => 1024, perms => oct(777);
 
@@ -76,11 +85,15 @@ Beyond that it can take two named arguments:
 
 =item * size
 
-This determines the size of the map. If the map is map has writing permissions and the file is smaller than the given size it will be lengthened.
+This determines the size of the map. If the map is map has writing permissions and the file is smaller than the given size it will be lengthened. Defaults to the length of the file and fails if it is zero.
 
 =item * perms
 
 This determines the permissions with which the file is created (if $mode is '+>'). Default is 0700.
+
+=item * offset
+
+This determines the offset in the file that is mapped. Default is 0.
 
 =back
 

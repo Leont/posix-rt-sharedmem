@@ -38,11 +38,6 @@ int _shm_open(name, flags, mode)
 	int mode;
 	CODE:
 		RETVAL = shm_open(name, flags, mode);
-		if (RETVAL == -1) {
-			char buffer[128];
-			get_sys_error(buffer, sizeof buffer);
-			Perl_croak(aTHX_ "Can't open shared memory '%s': %s", name, buffer);
-		}
 	OUTPUT:
 		RETVAL
 

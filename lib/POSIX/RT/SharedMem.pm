@@ -7,7 +7,7 @@ use Exporter 5.57 'import';
 use XSLoader;
 use Carp qw/croak/;
 use Fcntl qw/O_RDONLY O_WRONLY O_RDWR O_CREAT/;
-use Readonly 1.03;
+use Const::Fast;
 
 use File::Map 'map_handle';
 
@@ -17,8 +17,8 @@ our @EXPORT_OK = qw/shared_open shared_unlink/;
 
 XSLoader::load('POSIX::RT::SharedMem', $VERSION);
 
-Readonly my $fail_fd      => -1;
-Readonly my $default_mode => oct 700;
+const my $fail_fd       => -1;
+const my $default_perms => oct 700;
 
 my %flag_for = (
 	'<'  => O_RDONLY,
@@ -31,7 +31,7 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	my (undef, $name, $mode, %other) = @_;
 
 	my %options = (
-		perms  => $default_mode,
+		perms  => $default_perms,
 		offset => 0,
 		%other,
 	);

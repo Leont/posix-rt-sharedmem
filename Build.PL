@@ -18,7 +18,7 @@ my $builder = Module::Build->new(
 	},
 	requires => {
 		perl            => 5.008,
-		Readonly        => 1.03,
+		'Const::Fast'   => 0,
 		Exporter        => 5.57,
 		'File::Map'     => 0.19,
 	},
@@ -27,7 +27,7 @@ my $builder = Module::Build->new(
 			bugtracker  => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=POSIX::RT::SharedMem',
 			repository  => 'http://github.com/Leont/posix-rt-sharedmem/tree',
 		},
-		keywords        => [ 'mmap', 'memory mapping', 'shared memory' ],
+		keywords        => [ 'memory mapping', 'shared memory' ],
 	},
 	add_to_cleanup      => [ 'POSIX-RT-SharedMem-*' ],
 	create_makefile_pl  => 'small',

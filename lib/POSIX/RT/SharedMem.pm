@@ -41,7 +41,7 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 
 	my $fd = _shm_open($name, $flag_for{$mode}, $options{perms});
 	croak "Can't open shared memory object $name: $!" if $fd == $fail_fd;
-	open my $fh, '<&', $fd or croak "Can't fdopen($fd): $!";
+	open my $fh, "$mode&", $fd or croak "Can't fdopen($fd): $!";
 
 	$options{size} = -s $fh if not defined $options{size};
 	croak 'can\'t map empty file' if $options{size} == 0;

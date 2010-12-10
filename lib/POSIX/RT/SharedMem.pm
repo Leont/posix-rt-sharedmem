@@ -43,11 +43,13 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	my $fd = _shm_open($name, $flag_for{$mode}, $options{perms});
 	croak "Can't open shared memory object $name: $!" if $fd == $fail_fd;
 	open my $fh, "$mode&", $fd or croak "Can't fdopen($fd): $!";
+	$options{after_open}->($fh, \%options) if defined $options{after_open};
 
 	$options{size} = -s $fh if not defined $options{size};
 	croak 'can\'t map empty file' if $options{size} == 0;    # Should never happen
 	truncate $fh, $options{size} if $options{size} > -s $fh;
 
+	$options{before_mapping}->($fh, \%options) if defined $options{before_mapping};
 	map_handle $_[0], $fh, $mode, $options{offset}, $options{size};
 
 	return $fh if defined wantarray;

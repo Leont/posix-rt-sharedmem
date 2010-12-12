@@ -11,3 +11,4 @@ POSIX-RT-SharedMem-.*
 ^\.git
 ^lib/.*\.c$
 ^lib/.*\.o$
+^MYMETA.yml$

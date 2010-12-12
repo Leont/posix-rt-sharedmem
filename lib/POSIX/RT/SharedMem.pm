@@ -11,7 +11,7 @@ use Const::Fast;
 
 use File::Map 'map_handle';
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 our @EXPORT_OK = qw/shared_open shared_unlink/;
 
@@ -68,7 +68,7 @@ POSIX::RT::SharedMem - Create/open or unlink POSIX shared memory objects in Perl
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =head1 SYNOPSIS
 

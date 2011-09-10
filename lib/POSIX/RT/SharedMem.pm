@@ -16,12 +16,12 @@ our @EXPORT_OK = qw/shared_open shared_unlink/;
 XSLoader::load(__PACKAGE__, __PACKAGE__->VERSION);
 
 const my $fail_fd       => -1;
-const my $default_perms => oct '700';
+const my $default_perms => oct '600';
 
 my %flag_for = (
 	'<'  => O_RDONLY,
 	'+<' => O_RDWR,
-	'>'  => O_WRONLY,
+	'>'  => O_WRONLY | O_CREAT,
 	'+>' => O_RDWR | O_CREAT,
 );
 
@@ -36,7 +36,7 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	croak 'Not enough arguments for shared_open' if @_ < 2;
 	$mode = '<' if not defined $mode;
 	croak 'No such mode' if not defined $flag_for{$mode};
-	croak 'Size must be given in creating mode' if $mode eq '+>' and $options{size} == 0;
+	croak 'Size must be given in creating mode' if $flag_for{$mode} & O_CREAT and $options{size} == 0;
 
 	my $fd = _shm_open($name, $flag_for{$mode}, $options{perms});
 	croak "Can't open shared memory object $name: $!" if $fd == $fail_fd;
@@ -84,7 +84,7 @@ This determines the size of the map. If the map is map has writing permissions a
 
 =item * perms
 
-This determines the permissions with which the file is created (if $mode is '+>'). Default is 0700.
+This determines the permissions with which the file is created (if $mode is '+>'). Default is 0600.
 
 =item * offset
 

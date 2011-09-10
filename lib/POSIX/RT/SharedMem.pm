@@ -72,13 +72,13 @@ Map the shared memory object C<$name> into C<$map>. For portable use, a shared m
 
 C<$mode> determines the read/write mode. It works the same as in open and map_file.
 
-Beyond that it can take two named arguments:
+Beyond that it can take three named arguments:
 
 =over 4
 
 =item * size
 
-This determines the size of the map. If the map is map has writing permissions and the file is smaller than the given size it will be lengthened. Defaults to the length of the file and fails if it is zero.
+This determines the size of the map. If the map is map has writing permissions and the file is smaller than the given size it will be lengthened. Defaults to the length of the file and fails if it is zero. It is mandatory when using mode C<< > >> or C<< +> >>.
 
 =item * perms
 
@@ -89,6 +89,8 @@ This determines the permissions with which the file is created (if $mode is '+>'
 This determines the offset in the file that is mapped. Default is 0.
 
 =back
+
+It returns a filehandle that can be used to with L<stat>, L<chmod>, L<chown>. You should not assume you can read or write directly from it.
 
 =func shared_unlink $name
 

@@ -38,9 +38,7 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	croak 'No such mode' if not defined $flag_for{$mode};
 	croak 'Size must be given in creating mode' if $flag_for{$mode} & O_CREAT and $options{size} == 0;
 
-	my $fd = _shm_open($name, $flag_for{$mode}, $options{perms});
-	croak "Can't open shared memory object $name: $!" if $fd == $fail_fd;
-	open my $fh, "$mode&", $fd or croak "Can't fdopen($fd): $!";
+	my $fh = _shm_open($name, $flag_for{$mode}, $options{perms});
 	$options{after_open}->($fh, \%options) if defined $options{after_open};
 
 	$options{size} = -s $fh if not defined $options{size};

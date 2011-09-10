@@ -16,6 +16,18 @@
 #include <fcntl.h>           /* For O_* constants */
 #include <string.h>
 
+static SV* S_io_fdopen(pTHX_ int fd) {
+	PerlIO* pio = PerlIO_fdopen(fd, "r");
+	GV* gv = newGVgen("Symbol");
+	SV* ret = newRV_noinc((SV*)gv);
+	IO* io = GvIOn(gv);
+	IoTYPE(io) = '<';
+	IoIFP(io) = pio;
+	IoOFP(io) = pio;
+	return ret;
+}
+#define io_fdopen(fd) S_io_fdopen(aTHX_ fd)
+
 static void get_sys_error(char* buffer, size_t buffer_size) {
 #ifdef _GNU_SOURCE
 	const char* message = strerror_r(errno, buffer, buffer_size);
@@ -28,24 +40,35 @@ static void get_sys_error(char* buffer, size_t buffer_size) {
 #endif
 }
 
+#define ERRBUFSIZE 128
+
 MODULE = POSIX::RT::SharedMem				PACKAGE = POSIX::RT::SharedMem
 
 PROTOTYPES: DISABLED
 
-int _shm_open(name, flags, mode)
+SV* _shm_open(name, flags, mode)
 	const char* name;
 	int flags;
 	int mode;
+	PREINIT:
+		int ret;
 	CODE:
-		RETVAL = shm_open(name, flags, mode);
+		ret = shm_open(name, flags, mode);
+		if (ret == -1) {
+			char buffer[ERRBUFSIZE];
+			get_sys_error(buffer, sizeof buffer);
+			Perl_croak(aTHX_ "Can't open shared memory object %s: %s", name, buffer);
+		}
+		RETVAL = io_fdopen(ret);
 	OUTPUT:
 		RETVAL
+		
 
 void shared_unlink(name);
 	const char* name;
 	CODE:
 		if (shm_unlink(name) == -1) {
-			char buffer[128];
+			char buffer[ERRBUFSIZE];
 			get_sys_error(buffer, sizeof buffer);
 			Perl_croak(aTHX_ "Can't unlink shared memory '%s': %s", name, buffer);
 		}

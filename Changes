@@ -1,6 +1,8 @@
 Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
+
+0.07      2011-11-28 23:42:36 Europe/Amsterdam
           Conditionally link to librt (darwin bugfix)
           Work around bugs on FreeBSD and OS X
 

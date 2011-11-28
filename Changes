@@ -1,6 +1,7 @@
 Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
+          Conditionally link to librt (darwin bugfix)
 
 0.06      2011-09-10 11:44:19 Europe/Amsterdam
           Fixed creation mode and permission

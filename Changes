@@ -1,6 +1,8 @@
 Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
+
+0.08      2011-12-11 15:35:19 Europe/Amsterdam
           Add a flags parameter to shared_open
 
 0.07      2011-11-28 23:42:36 Europe/Amsterdam

@@ -1,6 +1,7 @@
 Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
+          Add a flags parameter to shared_open
 
 0.07      2011-11-28 23:42:36 Europe/Amsterdam
           Conditionally link to librt (darwin bugfix)

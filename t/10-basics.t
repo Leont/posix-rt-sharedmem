@@ -2,8 +2,9 @@
 
 use strict;
 use warnings;
+use Fcntl qw/O_EXCL/;
 use POSIX::RT::SharedMem qw/shared_open shared_unlink/;
-use Test::More tests => 9;
+use Test::More 0.88;
 use Test::Exception;
 
 my $random = int rand 1024;
@@ -31,7 +32,10 @@ SKIP: {
 	ok chmod(0644, $fh), 'Can chmod handle';
 }
 
+throws_ok { shared_open my $failer, $name, '+>', flags => O_EXCL, size => 1024 } qr/File exists/, 'Can\'t exclusively open an existing shared memory object';
+
 lives_ok { shared_unlink $name } "Can unlink '$name'";
 
 dies_ok { shared_open my $failer, $name } 'Can\'t open it anymore';
 
+done_testing;

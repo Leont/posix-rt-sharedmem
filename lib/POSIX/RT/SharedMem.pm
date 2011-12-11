@@ -31,6 +31,7 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	my %options = (
 		perms  => $default_perms,
 		offset => 0,
+		flags  => 0,
 		%other,
 	);
 	croak 'Not enough arguments for shared_open' if @_ < 2;
@@ -38,11 +39,11 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 	croak 'No such mode' if not defined $flag_for{$mode};
 	croak 'Size must be given in creating mode' if $flag_for{$mode} & O_CREAT and $options{size} == 0;
 
-	my $fh = _shm_open($name, $flag_for{$mode}, $options{perms});
+	my $fh = _shm_open($name, $flag_for{$mode} | $options{flags}, $options{perms});
 	$options{after_open}->($fh, \%options) if defined $options{after_open};
 
 	$options{size} = -s $fh if not defined $options{size};
-	croak 'can\'t map empty file' if $options{size} == 0;    # Should never happen
+	croak 'Can\'t map empty file' if $options{size} == 0;    # Should never happen
 	truncate $fh, $options{size} if $options{size} > -s $fh;
 
 	$options{before_mapping}->($fh, \%options) if defined $options{before_mapping};
@@ -87,6 +88,10 @@ This determines the permissions with which the file is created (if $mode is '+>'
 =item * offset
 
 This determines the offset in the file that is mapped. Default is 0.
+
+=item * flags
+
+Extra flags that are used when opening the shared memory object (e.g. C<O_EXCL>).
 
 =back
 

@@ -7,7 +7,7 @@ use Test::More tests => 9;
 use Test::Exception;
 
 my $random = int rand 1024;
-my $name = "/test-posix-rt-sharedmemi-$$-$random";
+my $name = "/test-posix-rt-$$-$random";
 
 my $map;
 

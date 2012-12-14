@@ -57,8 +57,6 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 
 1;    # End of POSIX::RT::SharedMem
 
-__END__
-
 #ABSTRACT: Create/open or unlink POSIX shared memory objects in Perl
 
 =head1 SYNOPSIS

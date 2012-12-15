@@ -7,7 +7,6 @@ use Exporter 5.57 'import';
 use XSLoader;
 use Carp qw/croak/;
 use Fcntl qw/O_RDONLY O_WRONLY O_RDWR O_CREAT/;
-use Const::Fast;
 
 use File::Map 'map_handle';
 
@@ -15,8 +14,8 @@ our @EXPORT_OK = qw/shared_open shared_unlink/;
 
 XSLoader::load(__PACKAGE__, __PACKAGE__->VERSION);
 
-const my $fail_fd       => -1;
-const my $default_perms => oct '600';
+my $fail_fd       = -1;
+my $default_perms = oct '600';
 
 my %flag_for = (
 	'<'  => O_RDONLY,

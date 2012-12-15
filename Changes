@@ -1,6 +1,7 @@
 Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
+          Remove Const::Fast dependency
 
 0.08      2011-12-11 15:35:19 Europe/Amsterdam
           Add a flags parameter to shared_open

@@ -14,7 +14,6 @@ our @EXPORT_OK = qw/shared_open shared_unlink/;
 
 XSLoader::load(__PACKAGE__, __PACKAGE__->VERSION);
 
-my $fail_fd       = -1;
 my $default_perms = oct '600';
 
 my %flag_for = (

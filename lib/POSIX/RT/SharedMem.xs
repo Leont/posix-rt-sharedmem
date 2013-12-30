@@ -18,7 +18,7 @@
 
 static SV* S_io_fdopen(pTHX_ int fd) {
 	PerlIO* pio = PerlIO_fdopen(fd, "r");
-	GV* gv = newGVgen("Symbol");
+	GV* gv = newGVgen("POSIX::RT::SharedMem");
 	SV* ret = newRV_noinc((SV*)gv);
 	IO* io = GvIOn(gv);
 	IoTYPE(io) = '<';

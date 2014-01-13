@@ -61,7 +61,11 @@ sub shared_open {    ## no critic (Subroutines::RequireArgUnpacking)
 
  use POSIX::RT::SharedMem qw/shared_open/;
 
- shared_open my $map, '/some_file', '>+', size => 1024, perms => oct(777);
+ shared_open my $map, '/some_file', '+>', size => 1024, perms => oct(777);
+
+=head1 DESCRIPTION
+
+This module maps POSIX shared memory into a variable that can be read just like any other variable, and it can be written to using standard Perl techniques such as regexps and C<substr>, B<as long as they don't change the length of the variable>.
 
 =func shared_open $map, $name, $mode, ...
 
@@ -79,11 +83,11 @@ This determines the size of the map. If the map is map has writing permissions a
 
 =item * perms
 
-This determines the permissions with which the file is created (if $mode is '+>'). Default is 0600.
+This determines the permissions with which the file is created (if $mode is C<< +> >>). Default is 0600.
 
 =item * offset
 
-This determines the offset in the file that is mapped. Default is 0.
+This determines the offset in the file that is mapped. Default is C<0>.
 
 =item * flags
 
@@ -91,7 +95,7 @@ Extra flags that are used when opening the shared memory object (e.g. C<O_EXCL>)
 
 =back
 
-It returns a filehandle that can be used to with L<stat>, L<chmod>, L<chown>. You should not assume you can read or write directly from it.
+It returns a filehandle that can be used to with L<stat>, L<chmod>, L<chown>. For portability you should not assume you can read or write directly from it.
 
 =func shared_unlink $name
 
@@ -101,7 +105,13 @@ Remove the shared memory object $name from the namespace. Note that while the sh
 
 =over 4
 
+=item * SysV::SharedMem
+
+This is a rather similar module that works with SysV shared memory. SysV has confusing ideas of how to identify a segment, as well as having various special case functions that are handled by standard filehandle calls in POSIX shared memory. This module should usually be preferred unless portability requires otherwise.
+
 =item * L<File::Map>
+
+This is used to map the shared memory handle into a scalar. If your processes have a parent-child relationship, you may want to look at C<map_anonymous> instead.
 
 =back
 

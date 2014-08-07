@@ -1,6 +1,8 @@
 Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
+
+0.09      2014-08-07 18:33:07+02:00 Europe/Amsterdam
           Remove Const::Fast dependency
           Update documentation to include description, see also and proper formatting
 

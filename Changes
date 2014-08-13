@@ -1,6 +1,7 @@
 Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
+          Set locale to "C" for predictable error messages
 
 0.09      2014-08-07 18:33:07+02:00 Europe/Amsterdam
           Remove Const::Fast dependency

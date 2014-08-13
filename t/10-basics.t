@@ -3,9 +3,12 @@
 use strict;
 use warnings;
 use Fcntl qw/O_EXCL/;
+use POSIX qw/setlocale LC_ALL/;
 use POSIX::RT::SharedMem qw/shared_open shared_unlink/;
 use Test::More 0.88;
 use Test::Exception;
+
+setlocale(LC_ALL, 'C');
 
 my $random = int rand 1024;
 my $name = "/test-posix-rt-$$-$random";

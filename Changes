@@ -1,6 +1,8 @@
 Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
+
+0.10      2014-08-16 13:44:46+02:00 Europe/Amsterdam
           Set locale to "C" for predictable error messages
           Converted tests to Test::Fatal
 

@@ -33,7 +33,7 @@ static SV* S_io_fdopen(pTHX_ int fd) {
 
 MODULE = POSIX::RT::SharedMem				PACKAGE = POSIX::RT::SharedMem
 
-PROTOTYPES: DISABLED
+PROTOTYPES: DISABLE
 
 SV* _shm_open(name, flags, mode)
 	const char* name;

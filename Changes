@@ -2,6 +2,7 @@ Revision history for POSIX-RT-SharedMem
 
 {{$NEXT}}
           - Simplify error handling
+          - Fix PROTOTYPES value in XS
 
 0.10      2014-08-16 13:44:46+02:00 Europe/Amsterdam
           Set locale to "C" for predictable error messages
